@@ -34,38 +34,34 @@ function Home() {
 
   const createVideo = async () => {
     try {
-        const response = await axios.post('/make-video', {
-            "genImagesPaths": imagePath,
-            "musicFilePath": musicFilePath,
-            "imageDuration": image_duration,
-            "transition_list": transition_list,
-            "video_length": videoLength
-        }, {
-            responseType: 'blob'  // Treat response as a video file
-        });
+      const video_response = await axios.post('/make-video', {
+        "genImagesPaths": imagePath,
+        "musicFilePath": musicFilePath,
+        "imageDuration": image_duration,
+        "transition_list": transition_list,
+        "video_length": videoLength
+      }, {
+        responseType: 'blob'  // IMPORTANT: Treat response as binary data
+      })
 
-        console.log("Blob Type:", response.data.type); // Should print "video/mp4"
+      console.log(video_response);
+      console.log("Blob Type:", video_response.data.type); // Should print "video/mp4"
 
-        // ✅ Convert response to downloadable file
-        const videoBlob = new Blob([response.data], { type: "video/mp4" });
-        const videoUrl = URL.createObjectURL(videoBlob);
 
-        // ✅ Auto-download the video
-        const a = document.createElement('a');
-        a.href = videoUrl;
-        a.download = "generated_video.mp4";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+      // Create a URL for the video blob
 
-        // ✅ Allow manual re-download
-        setVideoUrl(videoUrl);
-    } 
-    catch (error) {
-        console.log("Error Creating Video:", error);
+
+      const videoBlob = new Blob([video_response.data], { type: "video/mp4" });
+      const videoUrl = URL.createObjectURL(videoBlob);
+
+      // Update state with the video URL
+      setVideoUrl(videoUrl);
+
     }
-};
-
+    catch (error) {
+      console.log(error);
+    }
+  }
 
   
   const copyToClipboard = (text) => {
@@ -315,14 +311,14 @@ function Home() {
 
       <div className="video-part">
         <h2>Generated Video </h2>
-        {/* <div className="video-display">
+        <div className="video-display">
           {videoUrl && (
             <video controls >
               <source src={videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           )}
-        </div> */}
+        </div>
         <div className="video-options">
 
           {videoUrl && (
@@ -331,11 +327,11 @@ function Home() {
             </a>
           )}
 
-          {/* {videoUrl && (
+          {videoUrl && (
             <button onClick={() => window.open(videoUrl, "_blank")}>
               Open Video in New Tab
             </button>
-          )} */}
+          )}
         </div>
       </div>
 
