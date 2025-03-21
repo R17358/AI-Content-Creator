@@ -16,8 +16,10 @@ import os
 import tempfile
 import uuid
 
+# https://ai-content-creator-xi.vercel.app
+
 app = Flask(__name__)
-CORS(app, origins="https://ai-content-creator-xi.vercel.app", supports_credentials=True) # Enable CORS
+CORS(app, origins="http://localhost:5173", supports_credentials=True) # Enable CORS
 
 
 @app.route('/api/message', methods=['GET'])
@@ -153,6 +155,10 @@ def upload_image_file():
 
     return jsonify({"message": "Images uploaded successfully!", "files": genImagesPaths})
 
+GENERATED_VIDEO_DIR = "Generated_video"
+if not os.path.exists(GENERATED_VIDEO_DIR):
+    os.makedirs(GENERATED_VIDEO_DIR)
+
 @app.route('/api/make-video', methods=['POST'])
 def make_video():
     data = request.get_json()
@@ -162,17 +168,18 @@ def make_video():
     transition_list = data.get('transition_list', [])
     video_length = data.get('video_length', '')
 
+    # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
     output_video_path = os.path.join(temp_dir, "output_video.mp4")
 
     # Create video
     video_path = create_video(gen_images_paths, output_video_path, image_duration, transition_list, video_length, 30, 1.5)
-    
+
     if not video_path or not os.path.exists(video_path):
         return jsonify({"error": "Video creation failed"}), 500
 
-    time.sleep(1) 
-    final_video_path = video_path 
+    time.sleep(1)
+    final_video_path = video_path
 
     # Add music if provided
     if music_file_path:
@@ -182,12 +189,20 @@ def make_video():
         if not music_video_path or not os.path.exists(music_video_path):
             return jsonify({"error": "Music addition failed"}), 500
 
-        final_video_path = music_video_path  
+        final_video_path = music_video_path
+
+    # Ensure the Generated_video directory exists
+    if not os.path.exists(GENERATED_VIDEO_DIR):
+        os.makedirs(GENERATED_VIDEO_DIR)
 
     # Check if the final video exists before sending
     if os.path.exists(final_video_path):
-        output_video = f"Generated_video/output_fixed{int(time.time())}.mp4"
+        output_video = os.path.abspath(os.path.join(GENERATED_VIDEO_DIR, f"output_fixed{int(time.time())}.mp4"))
         video = fix(final_video_path, output_video)
+
+        if video is None:
+            return jsonify({"error": "Video processing failed"}), 500
+
         return Response(video, mimetype="video/mp4", headers={
             "Content-Disposition": "inline; filename=output_fixed.mp4",
             "Cache-Control": "no-cache, no-store, must-revalidate",
@@ -196,6 +211,7 @@ def make_video():
         })
 
     return jsonify({"error": "Video not found"}), 404
+
 
 
 if __name__ == '__main__':

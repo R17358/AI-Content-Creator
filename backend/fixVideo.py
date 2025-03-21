@@ -5,33 +5,38 @@ import os
 # # Input and output video paths
 # input_video = "Generated_video/output_video.mp4"
 # output_video = "Generated_video/output_fixed.mp4"
+# Ensure Generated_video directory exists
+GENERATED_VIDEO_DIR = "Generated_video"
+if not os.path.exists(GENERATED_VIDEO_DIR):
+    os.makedirs(GENERATED_VIDEO_DIR)
 
 def fixVideoToShow(input_video, output_video):
-    # Check if input video exists
+    """Fix video encoding issues using FFmpeg."""
+    output_dir = os.path.dirname(output_video)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     if not os.path.exists(input_video):
         print(f"❌ Input video not found: {input_video}")
-    else:
+        return None
 
-        # FFmpeg command to re-encode the video
-        ffmpeg_cmd = [
-            "ffmpeg",
-            "-i", input_video,       # Input file
-            "-vcodec", "libx264",    # Encode in H.264 format
-            "-acodec", "aac",        # Encode audio in AAC format
-            "-strict", "experimental",
-            output_video             # Output file
-        ]
+    ffmpeg_cmd = [
+        "ffmpeg",
+        "-i", input_video,
+        "-vcodec", "libx264",
+        "-acodec", "aac",
+        "-strict", "experimental",
+        output_video
+    ]
 
-        # Run FFmpeg command
-        try:
-            print("⏳ Processing video, please wait...")
-            subprocess.run(ffmpeg_cmd, check=True)
-            print(f"✅ Video re-encoded successfully: {output_video}")
+    try:
+        print("⏳ Processing video, please wait...")
+        subprocess.run(ffmpeg_cmd, check=True)
+        print(f"✅ Video re-encoded successfully: {output_video}")
 
-            # Load and display the fixed video
-            with open(output_video, "rb") as video_file:
-                video_bytes = video_file.read()
+        with open(output_video, "rb") as video_file:
+            return video_file.read()
 
-            return video_bytes  # Display in Streamlit
-        except subprocess.CalledProcessError as e:
-            return e
+    except subprocess.CalledProcessError as e:
+        print(f"❌ FFmpeg Error: {e}")
+        return None
