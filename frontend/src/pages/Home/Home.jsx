@@ -32,36 +32,41 @@ function Home() {
     }
   }, [enhancedPrompt]); // This will trigger when enhancedPrompt is updated
 
+  
   const createVideo = async () => {
     try {
-      const video_response = await axios.post('/make-video', {
-        "genImagesPaths": imagePath,
-        "musicFilePath": musicFilePath,
-        "imageDuration": image_duration,
-        "transition_list": transition_list,
-        "video_length": videoLength
-      }, {
-        responseType: 'blob'  // IMPORTANT: Treat response as binary data
-      })
+        const video_response = await axios.post('/make-video', {
+            "genImagesPaths": imagePath,
+            "musicFilePath": musicFilePath,
+            "imageDuration": image_duration,
+            "transition_list": transition_list,
+            "video_length": videoLength
+        }, {
+            responseType: 'blob'  // Ensures binary response
+        });
 
-      console.log(video_response);
-      console.log("Blob Type:", video_response.data.type); // Should print "video/mp4"
+        console.log("Blob Type:", video_response.data.type); // Should print "video/mp4"
 
+        // Create a Blob URL
+        const videoBlob = new Blob([video_response.data], { type: "video/mp4" });
+        const videoUrl = URL.createObjectURL(videoBlob);
 
-      // Create a URL for the video blob
+        // Trigger download directly (optional)
+        const a = document.createElement('a');
+        a.href = videoUrl;
+        a.download = "generated_video.mp4";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
-
-      const videoBlob = new Blob([video_response.data], { type: "video/mp4" });
-      const videoUrl = URL.createObjectURL(videoBlob);
-
-      // Update state with the video URL
-      setVideoUrl(videoUrl);
-
-    }
+        // Update state to allow manual download too
+        setVideoUrl(videoUrl);
+    } 
     catch (error) {
-      console.log(error);
+        console.log(error);
     }
-  }
+};
+
 
   
   const copyToClipboard = (text) => {
@@ -311,14 +316,14 @@ function Home() {
 
       <div className="video-part">
         <h2>Generated Video </h2>
-        <div className="video-display">
+        {/* <div className="video-display">
           {videoUrl && (
             <video controls >
               <source src={videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           )}
-        </div>
+        </div> */}
         <div className="video-options">
 
           {videoUrl && (
@@ -327,11 +332,11 @@ function Home() {
             </a>
           )}
 
-          {videoUrl && (
+          {/* {videoUrl && (
             <button onClick={() => window.open(videoUrl, "_blank")}>
               Open Video in New Tab
             </button>
-          )}
+          )} */}
         </div>
       </div>
 

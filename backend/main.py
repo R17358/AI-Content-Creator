@@ -185,17 +185,13 @@ def make_video():
         final_video_path = music_video_path  
 
     # Check if the final video exists before sending
+    
     if os.path.exists(final_video_path):
-        output_video = f"Generated_video/output_fixed{int(time.time())}.mp4"
-        video = fix(final_video_path, output_video)
-        return Response(video, mimetype="video/mp4", headers={
-            "Content-Disposition": "inline; filename=output_fixed.mp4",
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0"
-        })
+        return send_file(final_video_path, mimetype="video/mp4", as_attachment=True, download_name="output_fixed.mp4")
 
     return jsonify({"error": "Video not found"}), 404
+
+    
 
 
 if __name__ == '__main__':
