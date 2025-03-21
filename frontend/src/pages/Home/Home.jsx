@@ -34,7 +34,7 @@ function Home() {
 
   const createVideo = async () => {
     try {
-        const response = await axios.post('/api/make-video', {
+        const response = await axios.post('/make-video', {
             "genImagesPaths": imagePath,
             "musicFilePath": musicFilePath,
             "imageDuration": image_duration,
