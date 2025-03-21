@@ -1,0 +1,17 @@
+
+#root{
+  padding: 0;
+  margin: 0;
+}
+
+body{
+  padding: 0;
+  margin: 0;
+  background-color: #010002;
+ 
+}
+
+body::-webkit-scrollbar{
+  display: none;
+  scroll-behavior: smooth;
+}

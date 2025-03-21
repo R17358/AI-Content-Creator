@@ -1,0 +1,57 @@
+.img-prompt-list button{
+    border-radius: 19px;
+    height: 6vh;
+    border: none;
+    font-style: italic;
+    margin-left: 1vw;
+    color: black;
+    font-weight: 500;
+    background: aqua;
+    width: 46vw;
+    margin-bottom: 6vh;
+    cursor: pointer;
+}
+
+
+.img-prompt-list button:hover{
+    background-color: rgb(0, 0, 0);
+    color: aqua;
+    transition: all ease-in-out 0.5s;
+}
+
+.img-prompt-list h2{
+    color: aqua;
+}
+
+.img-prompt-list{
+    margin-left: 13vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.img-prompt-list .prompt{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3vh;
+}
+
+.img-prompt-list i{
+    color: rgb(12, 225, 215);
+    font-size: 35px;
+    margin-left: 1vw;
+    cursor: pointer;
+}
+
+.img-prompt-list-container{
+    width: 50vw;
+    height: 41vh;
+    margin-bottom: 4vh;
+    overflow: scroll;
+    background: #06060b;
+    border-radius: 10px;
+}
+
+.img-prompt-list-container::-webkit-scrollbar{
+    display: none;
+    scroll-behavior: smooth;
+}
