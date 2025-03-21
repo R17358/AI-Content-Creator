@@ -3,6 +3,9 @@ import './Home.css'
 import axios from '../../api/axios';
 import { useEffect } from 'react';
 
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 import PromptDownloader from '../../components/PromptDownloader/PromptDownloader';
 
 function Home() {
@@ -21,6 +24,7 @@ function Home() {
   const [videoUrl, setVideoUrl] = React.useState(null);
   const [orientation, setOrientation] = useState('landscape');
   const [copy, setCopy] = useState(false);
+  const [loading, setLoading] = useState(false);
 
 
   useEffect(() => {
@@ -33,6 +37,8 @@ function Home() {
   }, [enhancedPrompt]); // This will trigger when enhancedPrompt is updated
 
   const createVideo = async () => {
+    toast.success("Creating video...");
+    toast.success("Please wait for a minute...");
     try {
       const video_response = await axios.post('/make-video', {
         "genImagesPaths": imagePath,
@@ -57,9 +63,12 @@ function Home() {
       // Update state with the video URL
       setVideoUrl(videoUrl);
 
+      toast.success("Video created successfully!");
+
     }
     catch (error) {
       console.log(error);
+      toast.error("Failed to create video!");
     }
   }
 
@@ -104,11 +113,11 @@ function Home() {
 
       setImagePaths(paths);
       console.log("Upload successful:", response.data);
-      alert("Images uploaded successfully!");
+      toast.success("Images uploaded successfully!");
 
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Failed to upload images.");
+      toast.error("Failed to upload images!");
 
     }
   };
@@ -119,9 +128,11 @@ function Home() {
       const res = await axios.post('/send-prompt', { prompt });
       setEnhancedPrompt(res.data.enhanced_prompt);
       console.log(res); // Now this will print the response data
+      toast.success("Prompt submitted successfully!");
 
     } catch (error) {
       console.error('Error:', error);
+      toast.error("Failed to submit prompt!");
     }
   };
 
@@ -158,10 +169,10 @@ function Home() {
       });
       setMusicFilePath(response.data.file_path);
       console.log('Upload success:', response.data);
-      alert(`File uploaded to folder: ${response.data.folder}`);
+      toast.success(`File uploaded to folder: ${response.data.folder}`);
     } catch (error) {
       console.error('Upload failed:', error);
-      alert("File upload failed!");
+      toast.error("File upload failed!");
     }
   };
 
@@ -179,9 +190,12 @@ function Home() {
       setImage_duration(image_duration);
       setTransitionList(transition_list);
 
+      toast.success("Video length set successfully!");
+
     }
     catch (error) {
       console.log(error);
+      toast.error("Failed to set video length!");
     }
   }
 
@@ -268,7 +282,7 @@ function Home() {
       <div className="video-length">
           <label htmlFor="video-length">Enter Length of Video in seconds (60s): </label>
           <div className="video-length-input">
-            <input type="number" name="video-length" id="video-length" placeholder='60' min={5} onChange={(e) => { setVideoLength(e.target.value) }} />
+            <input type="number" name="video-length" id="video-length"  min={5} onChange={(e) => { setVideoLength(e.target.value) }} />
             <button type="button" onClick={videoLenHandler}>SET</button>
           </div>
         </div>
@@ -313,7 +327,7 @@ function Home() {
         <h2>Generated Video </h2>
         <div className="video-display">
           {videoUrl && (
-            <video controls >
+            <video key={videoUrl} controls >
               <source src={videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>

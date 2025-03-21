@@ -104,7 +104,7 @@ def getVideoLength():
     try:
         videoLength = request.get_json().get('videoLength', '')
         lyrics = request.get_json().get('lyrics', '')
-        numOfPrompts = int(videoLength) // 2
+        numOfPrompts = int(int(videoLength) // 4)
         imagePrompts = imgPrompt(lyrics, numOfPrompts)
         mipr_list, imageDuration, transition_list =  furtherImg(imagePrompts)
         return jsonify({"status": "success", "mipr_list": mipr_list, "image_duration": imageDuration, "transition_list": transition_list})
@@ -161,6 +161,7 @@ if not os.path.exists(GENERATED_VIDEO_DIR):
 
 @app.route('/api/make-video', methods=['POST'])
 def make_video():
+    print("called make video")
     data = request.get_json()
     gen_images_paths = data.get('genImagesPaths', [])
     music_file_path = data.get('musicFilePath', '')
@@ -171,7 +172,7 @@ def make_video():
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
     output_video_path = os.path.join(temp_dir, "output_video.mp4")
-
+    print("creating video")
     # Create video
     video_path = create_video(gen_images_paths, output_video_path, image_duration, transition_list, video_length, 30, 1.5)
 
@@ -183,6 +184,7 @@ def make_video():
 
     # Add music if provided
     if music_file_path:
+        print("adding music")
         output_video_music_path = os.path.join(temp_dir, "output_video_music.mp4")
         music_video_path = add_music_to_video(video_path, music_file_path, output_video_music_path)
 
@@ -194,7 +196,7 @@ def make_video():
     # Ensure the Generated_video directory exists
     if not os.path.exists(GENERATED_VIDEO_DIR):
         os.makedirs(GENERATED_VIDEO_DIR)
-
+    print("fixing video")
     # Check if the final video exists before sending
     if os.path.exists(final_video_path):
         output_video = os.path.abspath(os.path.join(GENERATED_VIDEO_DIR, f"output_fixed{int(time.time())}.mp4"))
@@ -202,7 +204,7 @@ def make_video():
 
         if video is None:
             return jsonify({"error": "Video processing failed"}), 500
-
+        print("video processed")
         return Response(video, mimetype="video/mp4", headers={
             "Content-Disposition": "inline; filename=output_fixed.mp4",
             "Cache-Control": "no-cache, no-store, must-revalidate",
