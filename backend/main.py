@@ -15,6 +15,7 @@ from flask_cors import CORS
 import os
 import tempfile
 import uuid
+import shutil
 
 app = Flask(__name__)
 CORS(app, origins="https://ai-content-creator-xi.vercel.app", supports_credentials=True) # Enable CORS
@@ -162,10 +163,10 @@ def make_video():
     transition_list = data.get('transition_list', [])
     video_length = data.get('video_length', '')
 
-    temp_dir = tempfile.mkdtemp()
+    temp_dir = tempfile.mkdtemp()  # Temporary directory
     output_video_path = os.path.join(temp_dir, "output_video.mp4")
 
-    # Create video
+    # ✅ Create video (store it on disk, not in memory)
     video_path = create_video(gen_images_paths, output_video_path, image_duration, transition_list, video_length, 30, 1.5)
     
     if not video_path or not os.path.exists(video_path):
@@ -174,7 +175,7 @@ def make_video():
     time.sleep(1) 
     final_video_path = video_path 
 
-    # Add music if provided
+    # ✅ Add music (store on disk)
     if music_file_path:
         output_video_music_path = os.path.join(temp_dir, "output_video_music.mp4")
         music_video_path = add_music_to_video(video_path, music_file_path, output_video_music_path)
@@ -184,13 +185,19 @@ def make_video():
 
         final_video_path = music_video_path  
 
-    # Check if the final video exists before sending
-    
+    # ✅ Stream video file without using extra RAM
     if os.path.exists(final_video_path):
-        return send_file(final_video_path, mimetype="video/mp4", as_attachment=True, download_name="output_fixed.mp4")
+        response = send_file(final_video_path, mimetype="video/mp4", as_attachment=True, download_name="output_fixed.mp4")
+        
+        # ✅ Delete temp files after response is sent (to save space)
+        try:
+            shutil.rmtree(temp_dir)
+        except Exception as e:
+            print("Error deleting temp files:", str(e))
+
+        return response
 
     return jsonify({"error": "Video not found"}), 404
-
     
 
 

@@ -32,26 +32,25 @@ function Home() {
     }
   }, [enhancedPrompt]); // This will trigger when enhancedPrompt is updated
 
-  
   const createVideo = async () => {
     try {
-        const video_response = await axios.post('/make-video', {
+        const response = await axios.post('/api/make-video', {
             "genImagesPaths": imagePath,
             "musicFilePath": musicFilePath,
             "imageDuration": image_duration,
             "transition_list": transition_list,
             "video_length": videoLength
         }, {
-            responseType: 'blob'  // Ensures binary response
+            responseType: 'blob'  // Treat response as a video file
         });
 
-        console.log("Blob Type:", video_response.data.type); // Should print "video/mp4"
+        console.log("Blob Type:", response.data.type); // Should print "video/mp4"
 
-        // Create a Blob URL
-        const videoBlob = new Blob([video_response.data], { type: "video/mp4" });
+        // ✅ Convert response to downloadable file
+        const videoBlob = new Blob([response.data], { type: "video/mp4" });
         const videoUrl = URL.createObjectURL(videoBlob);
 
-        // Trigger download directly (optional)
+        // ✅ Auto-download the video
         const a = document.createElement('a');
         a.href = videoUrl;
         a.download = "generated_video.mp4";
@@ -59,11 +58,11 @@ function Home() {
         a.click();
         document.body.removeChild(a);
 
-        // Update state to allow manual download too
+        // ✅ Allow manual re-download
         setVideoUrl(videoUrl);
     } 
     catch (error) {
-        console.log(error);
+        console.log("Error Creating Video:", error);
     }
 };
 
