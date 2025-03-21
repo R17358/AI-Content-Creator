@@ -2,20 +2,17 @@
 # AI Creator
 
 ## Add .env file:
-  
 
-  HUGGINGFACE_KEY =
   
   GEMINI_API_KEY = 
-  
-  IMG_TO_TEXT_URL=https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large
-  
+
+  (optional)
   BG_REMOVER_API_KEY=
   BG_REMOVER_API_URL=https://api.remove.bg/v1.0/removebg
 
 
 ## Overview
-**AI Creator** is a Python and Streamlit-based web application designed to simplify video creation for social media platforms like YouTube and Instagram. By providing a prompt, users can generate an entire video with AI-generated music, lyrics, and visuals, making content creation effortless.
+**AI Creator** is a Full stack web application with python flask and React.js designed to simplify video creation for social media platforms like YouTube and Instagram. By providing a prompt, users can generate an entire video with AI-generated music, lyrics, and visuals, making content creation effortless.
 
 ## Features
 - **AI-Powered Prompt Enhancement:** Enhances the user's video idea prompt to generate more engaging content.
@@ -55,18 +52,28 @@
 ## Installation
 ```sh
 # Clone the repository
-git clone https://github.com/R17358/AI-Creator.git
-cd ai-creator
+git clone https://github.com/R17358/AI-Content-Creator.git
+cd AI-Content-Creator
 
-# Install dependencies
+cd backend
+# Install backend dependencies
 pip install -r requirements.txt
 
-# Run the Streamlit app
-streamlit run app.py
+# Run Backend
+python main.py
+
+cd ../frontend
+
+# Frontend Installation
+
+npm install
+# Frontend Run
+
+npm run dev
 ```
 
 ## Usage
-1. Run the application using `streamlit run app.py`.
+1. Run the application using `npm run dev`.
 2. Enter a video prompt.
 3. Let the AI generate lyrics, music, images, and compile the video.
 4. Download and share your AI-generated video!
