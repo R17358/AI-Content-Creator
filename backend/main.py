@@ -17,7 +17,7 @@ import tempfile
 import uuid
 
 app = Flask(__name__)
-CORS(app, origins="https://ai-content-creator-xi.vercel.app/", supports_credentials=True) # Enable CORS
+CORS(app, origins="https://ai-content-creator-xi.vercel.app", supports_credentials=True) # Enable CORS
 
 
 @app.route('/api/message', methods=['GET'])
