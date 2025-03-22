@@ -4,6 +4,8 @@ import './PromptDownloader.css'
 const PromptDownloader = ({ mipr_list, orientation }) => {
 
 
+
+
   const [copy, setCopy] = useState(false);
 
   const downloadPrompts = () => {
@@ -45,7 +47,7 @@ const PromptDownloader = ({ mipr_list, orientation }) => {
          <div className="img-prompt-list-container">
          {mipr_list.map((prompt, index) => (
            <div key={index} className="prompt">
-             <textarea name="image_prompt" id={`prompt-${index}`} readOnly>
+             <textarea spellCheck={false} name="image_prompt" id={`prompt-${index}`} value={prompt} readOnly>
                {prompt}
              </textarea>
              {

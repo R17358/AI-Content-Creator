@@ -22,9 +22,10 @@ app = Flask(__name__)
 CORS(app, origins="http://localhost:5173", supports_credentials=True) # Enable CORS
 
 
-@app.route('/api/message', methods=['GET'])
-def get_message():
-    return jsonify({"message": "Hello from Flask Backend!"})
+@app.route('/api/idea', methods=['GET'])
+def get_idea():
+    idea = chatResponse("Suggest an idea for generating song lyrics in Hindi. Choose any type of song, such as romantic, sad, happy, inspirational, or devotional. Provide a creative and unique theme for the lyrics, along with a brief description of its mood and setting. Do not generate the lyrics—only provide the idea and concept for the song. also summarize in hindi")
+    return jsonify({"idea": idea})
 
 @app.route('/api/send-prompt', methods=['POST'])
 def receive_message():
@@ -137,15 +138,31 @@ def furtherImg(imagePrompts):
 
     return mipr_list, imageDuration, transition_list
 
+# @app.route('/api/send-images', methods=['POST'])
+# def upload_image_file():
+#     if 'images' not in request.files:
+#         return jsonify({"error": "No file part"}), 400
+
+#     files = request.files.getlist('images')  # Get multiple files
+#     genImagesPaths = []
+
+#     for file in files:
+#         if file.filename == '':
+#             continue
+
+#         temp_file_path = os.path.join(IMAGE_FOLDER, file.filename)
+#         file.save(temp_file_path)  # Save file inside images folder
+#         genImagesPaths.append({"filename": file.filename, "path": temp_file_path})
+
+#     return jsonify({"message": "Images uploaded successfully!", "files": genImagesPaths})
+
 @app.route('/api/send-images', methods=['POST'])
 def upload_image_file():
-    if 'images' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-
-    files = request.files.getlist('images')  # Get multiple files
+    files = sorted(request.files.items(), key=lambda x: x[0])  # Sort by field name (to maintain order)
+    
     genImagesPaths = []
-
-    for file in files:
+    
+    for key, file in files:
         if file.filename == '':
             continue
 
@@ -154,6 +171,7 @@ def upload_image_file():
         genImagesPaths.append({"filename": file.filename, "path": temp_file_path})
 
     return jsonify({"message": "Images uploaded successfully!", "files": genImagesPaths})
+
 
 GENERATED_VIDEO_DIR = "Generated_video"
 if not os.path.exists(GENERATED_VIDEO_DIR):

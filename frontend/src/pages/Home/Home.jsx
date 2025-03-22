@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import PromptDownloader from '../../components/PromptDownloader/PromptDownloader';
+import { use } from 'react';
 
 function Home() {
 
@@ -24,8 +25,12 @@ function Home() {
   const [videoUrl, setVideoUrl] = React.useState(null);
   const [orientation, setOrientation] = useState('landscape');
   const [copy, setCopy] = useState(false);
+  const [getidea, setIdea] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    getIdea();
+  }, []);
 
   useEffect(() => {
   
@@ -35,6 +40,25 @@ function Home() {
       })();
     }
   }, [enhancedPrompt]); // This will trigger when enhancedPrompt is updated
+
+  useEffect(() => {
+    if (lyrics.trim() !== "") {
+      (async () => {
+        await videoLenHandler(); // Uses latest lyrics
+      })();
+    }
+  }, [lyrics]); // This will trigger when lyrics is updated
+
+  const getIdea = async () => {
+    try {
+      const idea_res = await axios.get('/idea');
+      console.log("idea: ", idea_res); // Debugging
+      setIdea(idea_res.data.idea);
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
 
   const createVideo = async () => {
     toast.success("Creating video...");
@@ -87,40 +111,45 @@ function Home() {
   };
 
   const handleImageFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
-    setImages(selectedFiles);
+    // const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
+    // setImages(selectedFiles);
+    const selectedFiles = Array.from(event.target.files); // Convert FileList to array
+  setImages((prevImages) => [...prevImages, ...selectedFiles]); // Append new files
   };
+
 
   const handleImageUpload = async () => {
     if (images.length === 0) {
       alert("Please select images first!");
       return;
     }
-
+  
     const formData = new FormData();
+    
     images.forEach((image, index) => {
-      formData.append(`images`, image);
+      //formData.append(`images_${index}`, image); // Append with explicit key for order
+      formData.append("images", image); 
     });
-
+  
     console.log("Uploading images:", images);
+  
     try {
       const response = await axios.post("/send-images", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+  
       const paths = response.data.files.map(file => file.path);
-
       setImagePaths(paths);
       console.log("Upload successful:", response.data);
       toast.success("Images uploaded successfully!");
-
     } catch (error) {
       console.error("Upload failed:", error);
       toast.error("Failed to upload images!");
-
     }
   };
+  
 
 
   const handleSubmit = async () => {
@@ -189,7 +218,7 @@ function Home() {
       setMIPRList(mipr_list);
       setImage_duration(image_duration);
       setTransitionList(transition_list);
-
+     // console.log("MIPR List:", mipr_list);
       toast.success("Video length set successfully!");
 
     }
@@ -202,11 +231,22 @@ function Home() {
   return (
     <div className="home">
 
+      {
+        getidea ? <div className="idea">
+          <h2>Get Idea !</h2>
+          <textarea spellCheck={false} value={getidea}>{getidea}</textarea>
+          {
+              copy?<i className='bx bx-copy-alt' style={{color:'#0ce1d7'}}  ></i>:
+              <i className='bx bxs-copy' style={{color:'#0ce1d7'}} onClick={() => copyToClipboard(getidea)}></i>
+          }
+        </div> : <br />
+      }
+
       <div className="main-container-prompt-music">
         <div className="prompt-input">
           <label htmlFor="prompt">Enter Prompt: </label>
           <div className="input-prompt">
-            <input type="text" name="prompt" id="prompt" placeholder='Lyrics for song on ....' onChange={(e) => { setPrompt(e.target.value) }} 
+            <input type="text" name="prompt" id="prompt" spellCheck={false} placeholder='Lyrics for song on ....' onChange={(e) => { setPrompt(e.target.value) }} 
             onKeyDown={(e) => {
             if (e.key === "Enter" && prompt.trim() !== "") {
               handleSubmit();
@@ -275,14 +315,14 @@ function Home() {
               copy?<i className='bx bx-copy-alt' style={{color:'#0ce1d7'}}  ></i>:
               <i className='bx bxs-copy' style={{color:'#0ce1d7'}} onClick={() => copyToClipboard(lyrics)}></i>
           }
-          < textarea value={lyrics}></textarea>
+          < textarea value={lyrics} spellCheck={false} onChange={(e)=>{setLyrics(e.target.value)}}></textarea>
         </div> : <br />
       }
   
       <div className="video-length">
           <label htmlFor="video-length">Enter Length of Video in seconds (60s): </label>
           <div className="video-length-input">
-            <input type="number" name="video-length" id="video-length"  min={5} onChange={(e) => { setVideoLength(e.target.value) }} />
+            <input type="number" name="video-length" id="video-length"  min={5} onChange={(e) => { setVideoLength(Number(e.target.value)) }} />
             <button type="button" onClick={videoLenHandler}>SET</button>
           </div>
         </div>

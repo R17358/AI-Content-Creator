@@ -10,6 +10,24 @@
     scroll-behavior: smooth;
 }
 
+.idea{
+    color: aqua;
+    margin-left: 13vw;
+    margin-bottom: 3vh;
+}
+
+.idea textarea{
+    width: 68vw;
+    height: 26vh;
+    color: aqua;
+    padding: 3% 3%;
+    font-family: system-ui;
+    background: #0b1a1a;
+    font-style: italic;
+    font-weight: 600;
+    border-radius: 12px;
+}
+
 .main-container-prompt-music{
     display: flex;
     flex-direction: row;
@@ -221,6 +239,15 @@ textarea::-webkit-scrollbar{
     margin-left: 1vw;
     cursor: pointer;
 }
+
+
+.idea i{
+    color: rgb(12, 225, 215);
+    font-size: 35px;
+    margin-left: 1vw;
+    cursor: pointer;
+}
+
 
 .video-display {
     width: 100%;
