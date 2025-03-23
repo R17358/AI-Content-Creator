@@ -138,31 +138,15 @@ def furtherImg(imagePrompts):
 
     return mipr_list, imageDuration, transition_list
 
-# @app.route('/api/send-images', methods=['POST'])
-# def upload_image_file():
-#     if 'images' not in request.files:
-#         return jsonify({"error": "No file part"}), 400
-
-#     files = request.files.getlist('images')  # Get multiple files
-#     genImagesPaths = []
-
-#     for file in files:
-#         if file.filename == '':
-#             continue
-
-#         temp_file_path = os.path.join(IMAGE_FOLDER, file.filename)
-#         file.save(temp_file_path)  # Save file inside images folder
-#         genImagesPaths.append({"filename": file.filename, "path": temp_file_path})
-
-#     return jsonify({"message": "Images uploaded successfully!", "files": genImagesPaths})
-
 @app.route('/api/send-images', methods=['POST'])
 def upload_image_file():
-    files = sorted(request.files.items(), key=lambda x: x[0])  # Sort by field name (to maintain order)
-    
+    if 'images' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    files = request.files.getlist('images')  # Get multiple files
     genImagesPaths = []
-    
-    for key, file in files:
+
+    for file in files:
         if file.filename == '':
             continue
 
@@ -171,6 +155,23 @@ def upload_image_file():
         genImagesPaths.append({"filename": file.filename, "path": temp_file_path})
 
     return jsonify({"message": "Images uploaded successfully!", "files": genImagesPaths})
+
+# @app.route('/api/send-images', methods=['POST'])
+# def upload_image_file():
+#     files = sorted(request.files.items(), key=lambda x: x[0])  # Sort by field name (to maintain order)
+    
+#     genImagesPaths = []
+    
+#     for key, file in files:
+#         if file.filename == '':
+#             continue
+
+#         temp_file_path = os.path.join(IMAGE_FOLDER, file.filename)
+#         file.save(temp_file_path)  # Save file inside images folder
+#         genImagesPaths.append({"filename": file.filename, "path": temp_file_path})
+#         print(genImagesPaths)
+
+#     return jsonify({"message": "Images uploaded successfully!", "files": genImagesPaths})
 
 
 GENERATED_VIDEO_DIR = "Generated_video"
@@ -186,6 +187,9 @@ def make_video():
     image_duration = data.get('imageDuration', [])
     transition_list = data.get('transition_list', [])
     video_length = data.get('video_length', '')
+
+    print("gen_images_paths")
+    print(gen_images_paths)
 
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()

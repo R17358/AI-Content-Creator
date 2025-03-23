@@ -237,7 +237,7 @@ def cloth_effect_transition(img1, img2, duration, fps):
     return frames
 
 
-def parallax_transition(img1, img2, duration, fps):
+def parallax_transition(img1, img2, duration, fps, direction):
     frames = []
     height, width, _ = img1.shape
     num_frames = int(duration * fps)

@@ -7,7 +7,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import PromptDownloader from '../../components/PromptDownloader/PromptDownloader';
-import { use } from 'react';
+
 
 function Home() {
 
@@ -113,7 +113,7 @@ function Home() {
   const handleImageFileChange = (e) => {
     // const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
     // setImages(selectedFiles);
-    const selectedFiles = Array.from(event.target.files); // Convert FileList to array
+    const selectedFiles = Array.from(e.target.files); // Convert FileList to array
   setImages((prevImages) => [...prevImages, ...selectedFiles]); // Append new files
   };
 

@@ -3,9 +3,6 @@ import './PromptDownloader.css'
 
 const PromptDownloader = ({ mipr_list, orientation }) => {
 
-
-
-
   const [copy, setCopy] = useState(false);
 
   const downloadPrompts = () => {
